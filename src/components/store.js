@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Product from "./product";
+import Cart from "./cart";
 
 //state is a built in feature in react that allows components to store and manage data that can change over time
 //enables components to handle user interaction and updates the UI automatically 
@@ -34,6 +35,7 @@ const [productList, setProductList] = useState([
       ...newProduct, [event.target.name]: event.target.value
     })
   };
+  const [cartItems, setCartItems] = useState([]);
 
     //handleAddProduct
     const handleAddProduct = () => {
@@ -42,6 +44,26 @@ const [productList, setProductList] = useState([
         setNewProduct({name:"", price: ""});
       }
   };
+
+  //create a remove product function 
+
+  const handleRemoveProduct = (productName) => {
+    setProductList(productList.filter((product) => product.name !== productName))
+};
+
+  
+
+  const handleAddToCart = (product) => {
+    const existingItem = cartItems.find((item) => item.name === product.name)
+    if (existingItem){
+      const updatedCartItems = cartItems.map((item) => item.name === product.name,{...item, Quantity:item.quantity + 1}
+      );
+      setCartItems(updatedCartItems);
+    } else{
+      setCartItems([...cartItems, {...product, quantity: 1}])
+    }
+
+  }
 
   return (
     <div>
@@ -65,15 +87,26 @@ const [productList, setProductList] = useState([
       onChange={handleInputChange}
       />
       <button onClick={handleAddProduct}>Add New Product</button>
+      <button onClick={() => handleRemoveProduct(newProduct.name)}>Remove Product</button>
+      <button onClick={() => handleAddToCart(newProduct)}>Add to Cart</button>
+      
 
       {productList.map((product)=> (
         <Product
         name={product.name}
         price={product.price}
-        id={product.id}
+        key={product.id}
         />
+
+
+        
       ))}
+      <div>
+        <Cart cartItems={cartItems} />
+      </div>
+      
     </div>
+    
   )
 };
 
